@@ -10,8 +10,10 @@ import {
   Container,
   Spacer,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const styles = {
     homePage: {
       fontFamily: "Arial, sans-serif",
@@ -52,22 +54,20 @@ const HomePage: React.FC = () => {
   };
 
   const handleLogin = () => {
-    console.log("Andi redirect this");
+    navigate("/login");
   };
 
   const handleSignUp = () => {
-    console.log("Andi redirect this");
+    navigate("/signup");
   };
 
   return (
     <Container centerContent maxW="container.xl">
-      <Flex
-        as="nav"
-        align="center"
-        justify="space-between"
-        style={styles.navbar}
-      >
-        <Heading size="lg">Budgeting App</Heading>
+      <Flex as="nav" align="center" style={styles.navbar}>
+        <Heading pr="1" pl="0.0001" m="4" size="lg">
+          Budgeting App{" "}
+        </Heading>
+        <Spacer />
         <HStack spacing={4}>
           <Button style={styles.button} onClick={handleLogin}>
             Log In
