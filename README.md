@@ -1,5 +1,6 @@
 # BudgetApp
 
+## Frontend Design
 ```mermaid
 classDiagram
  ReactApp : BrowserRouter routing
@@ -39,6 +40,7 @@ onSubmit()
 }
 ```
 
+## Backend Design
 ```mermaid
 classDiagram
     class User {
