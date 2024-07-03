@@ -38,3 +38,36 @@ string password
 onSubmit()
 }
 ```
+
+```mermaid
+classDiagram
+    class User {
+       - string username
+       - string password
+       - string email
+       - string firstName
+       - string lastName
+       - int userID
+       - int budgetID
+       - GetUsers.("GET")
+       - GetUser.("GET", id)
+       - CreateUser.("POST", id)
+       - UpdateUser.("PUT", id)
+       - DeleteUser.("DELETE", id)
+    }
+    class Budget {
+        - int budgetID
+        - float netTotal
+        - float monthlyIncome
+        - float scholarships
+        - float debt
+        - float savings
+        - Interface customCategories
+        - Interface outputCategories
+        - GetBudgets.("GET")
+        - GetBudget.("GET", id)
+        - CreateBudget.("POST", id)
+        - UpdateBudget.("PUT", id)
+        - DeleteBudget.("DELETE", id)
+    }
+```
