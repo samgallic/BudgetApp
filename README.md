@@ -1,4 +1,4 @@
-# BudgetApp\
+# BudgetApp
 
 ## To Do List
 
