@@ -1,7 +1,7 @@
 import request from 'supertest';
 import express from 'express';
-import router from '../routes/userRoutes';
-import User from '../models/User';
+import router from '../../src/routes/userRoutes';
+import User from '../../src/models/User';
 
 const app = express();
 app.use(express.json());
