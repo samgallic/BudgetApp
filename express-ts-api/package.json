@@ -28,7 +28,7 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testMatch": [
-      "**/src/tests/*.ts"
+      "**/tests/**/*.ts"
     ]
   }
 }
