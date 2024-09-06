@@ -121,8 +121,8 @@ describe('User Routes', () => {
       User.findOne = jest.fn().mockResolvedValue(null);
   
       const res = await request(app)
-        .post('/api/users/login')
-        .send({ email: 'nonexistent@example.com', password: 'password123' });
+      .post('/users/login')
+      .send({ email: 'nonexistent@example.com', password: 'password123' });
   
       expect(res.status).toBe(401);
       expect(res.body.message).toBe('Invalid email or password');
@@ -135,8 +135,8 @@ describe('User Routes', () => {
       User.findOne = jest.fn().mockResolvedValue(mockUser);
   
       const res = await request(app)
-        .post('/api/users/login')
-        .send({ email: 'user@example.com', password: 'wrongpassword' });
+      .post('/users/login')
+      .send({ email: 'user@example.com', password: 'wrongpassword' });
   
       expect(res.status).toBe(401);
       expect(res.body.message).toBe('Invalid email or password');
@@ -149,8 +149,8 @@ describe('User Routes', () => {
       User.findOne = jest.fn().mockResolvedValue(mockUser);
   
       const res = await request(app)
-        .post('/api/users/login')
-        .send({ email: 'user@example.com', password: 'correctpassword' });
+      .post('/users/login')
+      .send({ email: 'user@example.com', password: 'correctpassword' });
   
       expect(res.status).toBe(200);
       expect(res.body.message).toBe('Login successful');
@@ -163,7 +163,7 @@ describe('User Routes', () => {
       User.findOne = jest.fn().mockRejectedValue(new Error('Database error'));
   
       const res = await request(app)
-        .post('/api/users/login')
+        .post('/users/login')
         .send({ email: 'user@example.com', password: 'password123' });
   
       expect(res.status).toBe(500);
