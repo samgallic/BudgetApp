@@ -111,6 +111,66 @@ describe('User Routes', () => {
     });
   });
 
+  describe('POST /login', () => {
+    beforeEach(() => {
+      jest.clearAllMocks(); // Clear any mocks before each test
+    });
+  
+    it('should return 401 if user is not found', async () => {
+      // Mock User.findOne to return null (user not found)
+      User.findOne = jest.fn().mockResolvedValue(null);
+  
+      const res = await request(app)
+      .post('/users/login')
+      .send({ email: 'nonexistent@example.com', password: 'password123' });
+  
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe('Invalid email or password');
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'nonexistent@example.com' });
+    });
+  
+    it('should return 401 if password is incorrect', async () => {
+      // Mock User.findOne to return a user with an incorrect password
+      const mockUser = { _id: '123', email: 'user@example.com', password: 'correctpassword' };
+      User.findOne = jest.fn().mockResolvedValue(mockUser);
+  
+      const res = await request(app)
+      .post('/users/login')
+      .send({ email: 'user@example.com', password: 'wrongpassword' });
+  
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe('Invalid email or password');
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'user@example.com' });
+    });
+  
+    it('should return 200 if email and password match', async () => {
+      // Mock User.findOne to return a user with the correct password
+      const mockUser = { _id: '123', email: 'user@example.com', password: 'correctpassword' };
+      User.findOne = jest.fn().mockResolvedValue(mockUser);
+  
+      const res = await request(app)
+      .post('/users/login')
+      .send({ email: 'user@example.com', password: 'correctpassword' });
+  
+      expect(res.status).toBe(200);
+      expect(res.body.message).toBe('Login successful');
+      expect(res.body.userId).toBe(mockUser._id);
+      expect(User.findOne).toHaveBeenCalledWith({ email: 'user@example.com' });
+    });
+  
+    it('should return 500 if there is a server error', async () => {
+      // Mock User.findOne to throw an error
+      User.findOne = jest.fn().mockRejectedValue(new Error('Database error'));
+  
+      const res = await request(app)
+        .post('/users/login')
+        .send({ email: 'user@example.com', password: 'password123' });
+  
+      expect(res.status).toBe(500);
+      expect(res.body.message).toBe('Internal server error');
+    });
+  });
+
   describe('PUT /users/:id', () => {
     it('should update an existing user', async () => {
         const mockUser = 
