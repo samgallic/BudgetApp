@@ -8,7 +8,7 @@ app.use(express.json());
 app.use('/users', router);
 
 // Mock the User model
-jest.mock('../models/User');
+jest.mock('../../src/models/User');
 
 describe('User Routes', () => {
   describe('GET /users', () => {
@@ -19,7 +19,6 @@ describe('User Routes', () => {
             firstName: 'Joanne', 
             lastName: 'Kim', 
             email:'joannekim@email.com', 
-            username: 'queencard', 
             password: 'wildflower' 
         }, 
         { 
@@ -27,7 +26,6 @@ describe('User Routes', () => {
             firstName: 'Andi', 
             lastName: 'Wang', 
             email:'aurndi@email.com', 
-            username: 'pokemon', 
             password: 'pizza'
         }
     ];
@@ -87,7 +85,6 @@ describe('User Routes', () => {
         firstName: 'Joanne', 
         lastName: 'Kim', 
         email:'joannekim@email.com', 
-        username: 'queencard', 
         password: 'wildflower'  
     };
       (User.prototype.save as jest.Mock).mockResolvedValue(mockUser);
@@ -97,7 +94,6 @@ describe('User Routes', () => {
         firstName: 'Joanne', 
         lastName: 'Kim', 
         email:'joannekim@email.com', 
-        username: 'queencard', 
         password: 'wildflower' 
     });
 
@@ -123,7 +119,6 @@ describe('User Routes', () => {
           firstName: 'Joanne', 
           lastName: 'Kim', 
           email:'joannekim@email.com', 
-          username: 'queencard', 
           password: 'wildflower'  
       };
       (User.findByIdAndUpdate as jest.Mock).mockResolvedValue(mockUser);
@@ -146,7 +141,7 @@ describe('User Routes', () => {
     it('should handle errors when updating a user', async () => {
       (User.findByIdAndUpdate as jest.Mock).mockRejectedValue(new Error('DB Error'));
 
-      const res = await request(app).put('/users/1').send({ firstName: 'John Updated' });
+      const res = await request(app).put('/users/1').send({ firstName: 'Joanne Updated' });
 
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty('message', 'Error updating user');

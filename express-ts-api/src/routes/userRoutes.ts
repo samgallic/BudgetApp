@@ -30,11 +30,42 @@ router.get('/:id', async (req: Request, res: Response) => {
 // Create a new user
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const newUser: IUser = new User(req.body);
+    const { firstName, lastName, email, password } = req.body;
+
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password,
+    });
+
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
   } catch (error) {
     res.status(400).json({ message: 'Error creating user', error });
+  }
+});
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Compare the password with the stored password
+    if (user.password !== password) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // If email and password match, proceed with login (e.g., return token or session)
+    res.status(200).json({ message: 'Login successful', userId: user._id });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error', error });
   }
 });
 
