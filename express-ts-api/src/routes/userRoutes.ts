@@ -46,6 +46,29 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Compare the password with the stored password
+    if (user.password !== password) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // If email and password match, proceed with login (e.g., return token or session)
+    res.status(200).json({ message: 'Login successful', userId: user._id });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+});
+
 // Update an existing user
 router.put('/:id', async (req: Request, res: Response) => {
   try {
