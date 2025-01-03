@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import User, { IUser } from '../models/User';
+import { Error as MongooseError } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -30,39 +32,46 @@ router.get('/:id', async (req: Request, res: Response) => {
 // Create a new user
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
-
-    const newUser = new User({
-      firstName,
-      lastName,
-      email,
-      password,
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = new User({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      password: hashedPassword,
     });
-
-    const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    await user.save();
+    res.status(201).send({ message: 'User created successfully' });
   } catch (error) {
-    res.status(400).json({ message: 'Error creating user', error });
-  }
+    if (error instanceof MongooseError.ValidationError) {
+      res.status(400).send({ message: error.message });
+    } else if (
+      error instanceof Error &&
+      'code' in error &&
+      (error as any).code === 11000
+    ) {
+      res.status(400).send({ message: 'Email already exists' });
+    } else {
+      res.status(500).send({ message: 'Internal server error' });
+    }
+  }  
 });
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Email not recognized' });
     }
 
-    // Compare the password with the stored password
-    if (user.password !== password) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid password' });
     }
 
-    // If email and password match, proceed with login (e.g., return token or session)
     res.status(200).json({ message: 'Login successful', userId: user._id });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error', error });
@@ -96,5 +105,9 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error deleting user', error });
   }
 });
+
+function isMongoServerError(error: any): error is { code: number } {
+  return error && typeof error === 'object' && 'code' in error;
+}
 
 export default router;
